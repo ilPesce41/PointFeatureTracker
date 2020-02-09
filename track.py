@@ -186,7 +186,6 @@ def track_points(imgs,_imgs,pnts):
             pnts = npnts
     return pnts, _imgs
 
-
 def points_from_frames(frame_dir,outdir = None):
     """
     Track points from frames in a directory
@@ -231,10 +230,11 @@ def points_from_frames(frame_dir,outdir = None):
     for i,frame in enumerate(frames):
         im.imwrite(join(outdir,frame_flist[i]),frame)
     
-
 def points_from_video(video):
     pass
 
 if __name__ == "__main__":
 
-    points_from_frames('moon_frames')
+    fdir = input("Frame Directory:")
+    points_from_frames(fdir)
+    input("Complete")
