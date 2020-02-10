@@ -12,6 +12,37 @@ import math
 im.plugins.ffmpeg.download()
 
 
+class KalmanPoint:
+
+    def __init__(self,x,y,A):
+
+        self.R = A
+        self.x = x
+        self.y = y
+        self.A = np.ndarray(
+            [[1,0,1,0],
+            [0,1,0,1],
+            [0,0,1,0],
+            [0,0,0,1]]
+        )
+        self.Q = np.eye(4)@np.array([25,25,45,45]).T
+        self.P = Q
+        self.history = []
+        self.history.append(x,y)
+    
+    def update(self,x,y):
+        P = self.P
+        St = np.array([self.x,self.y]).T
+        H = np.ndarray([[1,0,0,0],[0,1,0,0])
+        Em = self.A@St
+        Ptm = A@P@A.T + Q
+        K = Ptm@H.T@np.linalg.pinv(H@Ptm@H.T+self.R)
+        St = Stm + K@(np.array(x,y).T-H@Stm)
+        self.P = (np.eye(4)-K@H)@Ptm
+        self.x = St[0]
+        self.y = St[1]
+        self.history.append((self.x,self,y))
+
 @numba.njit
 def img_to_grayscale(im):
     """
@@ -198,11 +229,11 @@ def points_from_frames(frame_dir,outdir = None):
     #Filter for just png's and put them in numerical order
     temp = []
     for f in frame_flist:
-        if f.lower().endswith('.png'):
+        if f.lower().endswith('.png')or f.lower().endswith('.jpg'):
             temp.append(f)
     frame_flist = temp
-    frame_flist = sorted(frame_flist,key=lambda x: int(x.split('.')[0]))
-    
+    frame_flist = sorted(frame_flist,key=lambda x: int(x.split('.')[0]))[:10]
+    print(frame_flist)
     #Import the image data and split into color and grayscale images
     frames = [im.imread(join(frame_dir,x)) for x in frame_flist]
     if len(frames[0].shape)>2:
